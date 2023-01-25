@@ -8,12 +8,12 @@ import gzip
 from dotenv import load_dotenv
 
 load_dotenv()
-print(f"Host: {os.environ.get('POSTGRES_HOST')}")
 conn = psycopg2.connect(database=os.environ.get('POSTGRES_NAME'),
                         user=os.environ.get('POSTGRES_USER'),
                         password=os.environ.get('POSTGRES_PASSWORD'),
                         host=os.environ.get('POSTGRES_HOST'),
                         port=os.environ.get('POSTGRES_PORT'))
+
 def download_data(url, type = None):
     response = requests.get(url)
     with open(url.split('/')[-1], "wb") as f:
@@ -40,9 +40,7 @@ def execute_values(conn, df, table):
         return 1
     print("the dataframe is inserted")
     cursor.close()
-# connect to the database
 
-print("Database connected successfully")
 
 gree_taxi_url = "https://github.com/DataTalksClub/nyc-tlc-data/releases/download/green/green_tripdata_2019-01.csv.gz"
 taxi_zone_url = "https://s3.amazonaws.com/nyc-tlc/misc/taxi+_zone_lookup.csv"
@@ -52,14 +50,7 @@ download_data(taxi_zone_url)
 green_taxi = pd.read_csv('.'.join(gree_taxi_url.split('/')[-1].split('.')[:-1]))
 taxi_zone = pd.read_csv(taxi_zone_url.split('/')[-1])
 print("Writing Data ....")
-# data.to_sql('yellow_taxi_table', con=connection, if_exists='replace')
-# execute_values(conn, green_taxi, 'yellow_taxi')
-# execute_values(conn, taxi_zone, 'taxi_zone')
-#
-# cur.execute("SELECT * FROM yellow_taxi_table")
-# rows = cur.fetchall()
-# for data in rows:
-#     print (data)
+execute_values(conn, green_taxi, 'yellow_taxi')
+execute_values(conn, taxi_zone, 'taxi_zone')
 
-# print('Data fetched suc
 conn.close()
